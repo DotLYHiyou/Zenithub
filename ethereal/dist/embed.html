@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        /* css/index.css */
+        .button {
+            box-sizing: border-box;
+            border: none;
+            margin: 10px auto;
+            width: 200px;
+            transition-duration: 0.5s;
+            background-color: gainsboro;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .button:hover,
+        .button:active {
+            background-color: #eff21b;
+        }
+    </style>
+    <script>
+        // iframesettings.js
+        const iframeAllow = "accelerometer ambient-light-sensor attribution-reporting autoplay bluetooth browsing-topics camera compute-pressure " +
+            "cross-origin-isolated display-capture document-domain encrypted-media fullscreen gamepad geolocation gyroscope hid " +
+            "identity-credentials-get idle-detection local-fonts magnetometer microphone midi otp-credentials payment " +
+            "picture-in-picture publickey-credentials-create publickey-credentials-get screen-wake-lock serial speaker-selection " +
+            "storage-access usb web-share window-management xr-spatial-tracking";
+
+        const iframeSandbox = "allow-popups allow-popups-to-escape-sandbox allow-downloads allow-forms allow-modals allow-orientation-lock " +
+            "allow-pointer-lock allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation";
+    </script>
+    <script>
+        function inject() {
+            let newWindow = window.open();
+            let iframe = newWindow.document.createElement("iframe");
+            let a = window.location.href;
+            iframe.src = a.substring(0, a.lastIndexOf("/")) + "/index.html";
+            iframe.style =
+                "border: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;";
+            // allow everything (https://developer.mozilla.org/en-US/docs/Web/HTTP/Permissions_Policy#browser_compatibility)
+            iframe.allow = iframeAllow;
+            iframe.sandbox = iframeSandbox;
+            newWindow.document.body.appendChild(iframe);
+        }
+    </script>
+</head>
+
+<body style="margin: 0px; border: 0px; padding: 0px; background: transparent">
+    <button onclick="inject();" class="button" style="width: 90vw; height: 90vh; margin: 5vh 5vw">
+        Inject
+    </button>
+</body>
+
+</html>

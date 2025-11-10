@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ethereal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+        @font-face {
+            font-family: inter;
+            src: url(fonts/inter.ttf);
+        }
+
+        * {
+            font-family: inter;
+        }
+
+        body, html {
+            background-color: var(--color-slate-950);
+        }
+    </style>
+</head>
+
+<body class="black">
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
+
+    <div id="app"></div>
+    <script type="module" lang="ts">
+        import App from './src/App.svelte';
+        import proxyManager from "./src/proxy.svelte";
+        import './src/app.css';
+        import { mount } from "svelte";
+
+        // stfu vite
+        proxyManager.uvConfig = __uv$config;
+        proxyManager.initializeProxy();
+
+        const app = mount(App, {
+            target: document.getElementById('app')
+        });
+    </script>
+</body>
+
+</html>
