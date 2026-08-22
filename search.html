@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Scramjet Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #1a1a1a;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: #2d2d2d;
+            border-bottom: 1px solid #3d3d3d;
+            align-items: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        button {
+            background: #3d3d3d;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #4d4d4d;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #3d3d3d;
+            background: #1a1a1a;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #0066cc;
+        }
+
+        .status {
+            padding: 4px 12px;
+            background: #3d3d3d;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        iframe {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <div class="nav-buttons">
+                <button id="backBtn" title="Back">←</button>
+                <button id="forwardBtn" title="Forward">→</button>
+                <button id="reloadBtn" title="Reload">↻</button>
+            </div>
+            <input type="text" id="urlInput" placeholder="Enter URL..." value="https://example.com">
+            <button id="goBtn">Go</button>
+            <div class="status" id="status">Ready</div>
+        </div>
+        <iframe id="browserFrame" title="Scramjet Browser"></iframe>
+    </div>
+    <!--
+        STEP 1: Load the libraries. Keep these as plain <script> tags. Do not turn
+        them into type="module" / imports. They put their API on the global object
+        (window.$scramjet, window.$scramjetController, window.EpoxyTransport), and
+        that only happens in a classic script.
+
+        scramjet/ and controller/ need to live at your site root. The service worker
+        loads scramjet.js and scramjet.wasm from /scramjet/ and the inject script
+        from /controller/, so keep those paths unless you also change the controller
+        config.
+    -->
+    <script src="/scramjet/scramjet.js"></script>
+    <script src="/controller/controller.api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/epoxy-transport@3.0.1/dist/index.js"></script>
+
+    <script>
+        const { Controller } = $scramjetController;
+        const { defaultConfig } = $scramjet;
+        const EpoxyTransport = self.EpoxyTransport.default;
+
+        const iframe = document.getElementById("browserFrame");
+        const urlInput = document.getElementById("urlInput");
+        const statusEl = document.getElementById("status");
+
+        let scramjet = null;
+        let frame = null;
+
+        function setStatus(t, err = false) {
+            statusEl.textContent = t;
+            statusEl.style.color = err ? "#ff6b6b" : "#aaa";
+        }
+
+        function norm(u) {
+            if (!u.includes(".")) return "https://www.duckduckgo.com/search?q=" + encodeURIComponent(u);
+            return u.startsWith("http") ? u : "https://" + u;
+        }
+
+        async function init() {
+            try {
+                setStatus("Initializing...");
+
+                await navigator.serviceWorker.ready;
+
+                const serviceworker =
+                    navigator.serviceWorker.controller ??
+                    (await navigator.serviceWorker.ready).active;
+
+                const transport = new EpoxyTransport({
+                    wisp: "wss://e.space.blocksi.lol.cdn.cloudflare.net/wisp/"
+                });
+
+                await transport.init();
+
+                scramjet = new Controller({
+                    serviceworker,
+                    transport,
+                    scramjetConfig: defaultConfig
+                });
+
+                await scramjet.wait();
+
+                frame = scramjet.createFrame(iframe);
+
+                const storedQuery = sessionStorage.getItem("searchQuery");
+                if (storedQuery) {
+                    urlInput.value = storedQuery;
+                    frame.go(norm(storedQuery));
+                    sessionStorage.removeItem("searchQuery");
+                } else {
+                    frame.go("https://example.com");
+                }
+
+                setStatus("Ready");
+            } catch (e) {
+                console.error(e);
+                setStatus(e.message, true);
+            }
+        }
+
+        function go() {
+            const url = norm(urlInput.value);
+            urlInput.value = url;
+            frame?.go(url);
+        }
+
+        document.getElementById("goBtn").onclick = go;
+
+        urlInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") go();
+        });
+
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/sw.js").then(init);
+        } else {
+            setStatus("No service worker support", true);
+        }
+    </script>
+</body>
+
+</html>
