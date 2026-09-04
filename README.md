@@ -3,7 +3,7 @@
 </p>
 
 # DotGUI (Formerly Zenithub, and before that, BlackoutGames.)
-
+ 
 DotGUI is an advanced game-site that features over 80+ games, a static scramjet proxy, tools, clean UI and UX, and high-quality updates that bring much needed changes. We also have the fastest fan-service of ANY site out there!
 - Join the discord server [here](https://discord.gg/U8tT8AazXb) to get access to insights into future updates, important information, report bugs into more detail, recieve more detailed help with problems, get links, and more.
 - (Please note there isn't any general channel in the server, and you can only talk in the bug report channel, being off topic = 1 week mute, and repeated offenses give you an unappealable ban from the server.)
