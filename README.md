@@ -33,8 +33,7 @@ Go to one of our OFFICIAL Links listed in the Discord Server.
 
 # Credits
 - Credits to all of the people who own the rights to the games, just open an issue to get a game taken down, just provide proof you own the game.
-- Credits to Mercury Workshop for Scramjet that my proxies going forward will depend on to work.
-- Credits to Destroyed12121 for static scramjet implementation
+- Credits to Mercury Workshop for Scramjet that I use for proxies
 - Credits to the following sources for the games:
   - UGS for the main games.
   - GN-Math for the Exotic games.
