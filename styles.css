@@ -143,6 +143,7 @@ p {
   #request {
     color: #ff0000;
     background-color: rgb(0, 0, 0);
+    padding: 0.82em 0.8em;
   }
   select {
     font-family: Outfit;
@@ -151,6 +152,7 @@ p {
   }
   img {
     border-radius: 15px;
+    display: block;
   }
   button {
     position: relative;
@@ -162,10 +164,11 @@ p {
     border-radius: 15px;
     transition: all 0.2s;
     border: none;
+    appearance: none;
     font-family: Outfit;
     font-weight: 425;
     background-color: rgb(0, 0, 0);
-    padding: 0.82em 0.8em;
+    padding: 0.4em 0.4em;
     margin: 5px;
     color: rgb(0, 242, 255);
   }
